@@ -80,3 +80,4 @@ include_directories(${source_dir}/src)
 
 # Add subdirectories
 add_subdirectory(CursesLib)
+add_subdirectory(WindowTest)
