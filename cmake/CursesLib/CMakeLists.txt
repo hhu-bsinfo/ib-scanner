@@ -21,7 +21,8 @@ include_directories(${IBPERFMONITOR_SRC_DIR})
  
 set(SOURCE_FILES
         ${IBPERFMONITOR_SRC_DIR}/CursesLib/WindowManager.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/Window.cpp)
+        ${IBPERFMONITOR_SRC_DIR}/CursesLib/Window.cpp
+        ${IBPERFMONITOR_SRC_DIR}/CursesLib/MessageWindow.cpp)
  
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
