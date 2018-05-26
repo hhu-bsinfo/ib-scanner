@@ -4,7 +4,8 @@ message(STATUS "Project " ${PROJECT_NAME})
 include_directories(${IBPERFMONITOR_SRC_DIR})
 
 set(SOURCE_FILES
-        ${IBPERFMONITOR_SRC_DIR}/IbPerfMon/MonitorWindow.cpp)
+        ${IBPERFMONITOR_SRC_DIR}/IbPerfMon/MonitorWindow.cpp
+        ${IBPERFMONITOR_SRC_DIR}/IbPerfMon/IbPerfMon.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

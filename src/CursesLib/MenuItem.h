@@ -27,6 +27,9 @@ namespace CursesLib {
 
 /**
  * An item used in MenuWindows.
+ *
+ * @author Fabian Ruhland, Fabian.Ruhland@hhu.de
+ * @date May 2018
  */
 class MenuItem {
 
