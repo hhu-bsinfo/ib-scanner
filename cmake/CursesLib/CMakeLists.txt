@@ -24,7 +24,8 @@ set(SOURCE_FILES
         ${IBPERFMONITOR_SRC_DIR}/CursesLib/Window.cpp
         ${IBPERFMONITOR_SRC_DIR}/CursesLib/MessageWindow.cpp
         ${IBPERFMONITOR_SRC_DIR}/CursesLib/OkMessageWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/YesNoMessageWindow.cpp)
+        ${IBPERFMONITOR_SRC_DIR}/CursesLib/YesNoMessageWindow.cpp
+        ${IBPERFMONITOR_SRC_DIR}/CursesLib/ListWindow.cpp)
  
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
