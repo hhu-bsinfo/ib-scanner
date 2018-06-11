@@ -64,6 +64,17 @@ void WindowManager::Run() {
             DrawWindows();
         }
 
+        uint32_t width, height;
+        getmaxyx(stdscr, height, width);
+
+        if(m_terminalWidth != width || m_terminalHeight != height) {
+            m_terminalWidth = width;
+            m_terminalHeight = height;
+
+            m_erase = true;
+            m_refresh = true;
+        }
+
         int c = getch();
 
         if (c == ERR) {
