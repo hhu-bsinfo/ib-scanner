@@ -63,6 +63,8 @@ private:
      */
     void StartMonitoring();
 
+    void SetWindowCount(uint8_t windowCount);
+
 private:
 
     IbPerfLib::IbFabric *m_fabric;
@@ -72,7 +74,7 @@ private:
     char m_helpMessage[256];
     CursesLib::OkMessageWindow *m_helpWindow;
     CursesLib::MenuWindow *m_menuWindow;
-    MonitorWindow *m_monitorWindow;
+    MonitorWindow *m_monitorWindow[4];
 
     bool m_isRunning;
 };
