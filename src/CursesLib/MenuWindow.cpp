@@ -27,6 +27,8 @@ MenuWindow::MenuWindow(uint32_t posX, uint32_t posY, uint32_t width, uint32_t he
 }
 
 void MenuWindow::DrawContent() {
+    Window::DrawContent();
+
     uint32_t posY = 0;
     int32_t scrollOffsetBackup = m_scrollOffset;
 

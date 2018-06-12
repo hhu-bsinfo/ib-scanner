@@ -11,6 +11,8 @@ ListWindow::ListWindow(uint32_t posX, uint32_t posY, uint32_t width, uint32_t he
 }
 
 void ListWindow::DrawContent() {
+    Window::DrawContent();
+
     for (uint32_t i = 0; i < GetWidth(); i++) {
         for (uint32_t j = 0; j < GetHeight(); j++) {
             PrintCharAt(i, j, ' ');
