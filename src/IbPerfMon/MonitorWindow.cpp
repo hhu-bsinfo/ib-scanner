@@ -16,6 +16,11 @@ MonitorWindow::MonitorWindow(uint32_t posX, uint32_t posY, uint32_t width, uint3
                              IbPerfLib::IbPerfCounter *perfCounter, uint32_t refreshInterval) :
         ListWindow(posX, posY, width, height, title),
         m_perfCounter(perfCounter),
+        m_lastXmit(0),
+        m_lastRcv(0),
+        m_xmitThroughput(0),
+        m_rcvThroughput(0),
+        m_refreshThroughput(false),
         m_refreshInterval(refreshInterval) {
     m_perfCounter->RefreshCounters();
 
@@ -33,6 +38,8 @@ void MonitorWindow::DrawContent() {
 void MonitorWindow::SetPerfCounter(IbPerfLib::IbPerfCounter *counter) {
     m_perfCounter = counter;
     m_highlight = 0;
+    m_xmitThroughput = 0;
+    m_rcvThroughput = 0;
 
     m_perfCounter->RefreshCounters();
     RefreshValues();
@@ -42,6 +49,26 @@ void MonitorWindow::RefreshValues() {
     m_perfCounter->RefreshCounters();
     m_items.clear();
 
+    if(m_refreshThroughput) {
+        if (m_lastXmit != 0 && m_lastRcv != 0) {
+            m_xmitThroughput = (m_perfCounter->GetXmitDataBytes() - m_lastXmit) / (m_refreshInterval / 1000);
+            m_rcvThroughput = (m_perfCounter->GetRcvDataBytes() - m_lastRcv) / (m_refreshInterval / 1000);
+
+        } else {
+            m_xmitThroughput = 0;
+            m_rcvThroughput = 0;
+        }
+
+        m_lastXmit = m_perfCounter->GetXmitDataBytes();
+        m_lastRcv = m_perfCounter->GetRcvDataBytes();
+
+        m_refreshThroughput = false;
+    }
+
+    m_items.emplace_back("Xmit Througput:                      " + FormatValue(m_xmitThroughput, "Bytes/s") +
+            " (" + std::to_string(m_xmitThroughput) + ")");
+    m_items.emplace_back("Rcv Througput:                       " + FormatValue(m_rcvThroughput, "Bytes/s") +
+            " (" + std::to_string(m_rcvThroughput) + ")");
     m_items.emplace_back(
             "Xmit Data:                           " + FormatValue(m_perfCounter->GetXmitDataBytes(), "Bytes") +
             " (" + std::to_string(m_perfCounter->GetXmitDataBytes()) + ")");
@@ -96,10 +123,23 @@ void MonitorWindow::RefreshValues() {
                          " (" + std::to_string(m_perfCounter->GetVL15Dropped()) + ")");
     m_items.emplace_back("Xmit Wait:                           " + FormatValue(m_perfCounter->GetXmitWait()) +
                          " (" + std::to_string(m_perfCounter->GetXmitWait()) + ")");
+
+    m_lastXmit = m_perfCounter->GetXmitDataBytes();
+    m_lastRcv = m_perfCounter->GetRcvDataBytes();
+}
+
+void MonitorWindow::ResetValues() {
+    m_perfCounter->ResetCounters();
+
+    m_xmitThroughput = 0;
+    m_rcvThroughput = 0;
+
+    RefreshValues();
 }
 
 void MonitorWindow::RefreshThread() {
     while (true) {
+        m_refreshThroughput = true;
         RefreshValues();
         CursesLib::WindowManager::GetInstance()->RequestRefresh();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_refreshInterval));

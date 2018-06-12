@@ -45,16 +45,14 @@ public:
     void SetPerfCounter(IbPerfLib::IbPerfCounter *counter);
 
     /**
-     * Get the performance counter.
-     */
-    IbPerfLib::IbPerfCounter *GetPerfCounter() {
-        return m_perfCounter;
-    }
-
-    /**
      * Refresh the counters.
      */
     void RefreshValues();
+
+    /**
+     * Reset the counters.
+     */
+    void ResetValues();
 
 private:
     /**
@@ -80,6 +78,10 @@ private:
 private:
 
     IbPerfLib::IbPerfCounter *m_perfCounter;
+
+    uint64_t m_lastXmit, m_lastRcv;
+    uint64_t m_xmitThroughput, m_rcvThroughput;
+    bool m_refreshThroughput;
 
     std::thread m_refreshThread;
     uint32_t m_refreshInterval;

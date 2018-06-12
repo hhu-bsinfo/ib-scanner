@@ -62,8 +62,7 @@ void IbPerfMon::Run() {
 
     m_manager->AddMenuFunction("Help", [&] { m_manager->RegisterWindow(m_helpWindow); });
     m_manager->AddMenuFunction("Reset Current", [&] {
-        m_monitorWindow->GetPerfCounter()->ResetCounters();
-        m_monitorWindow->RefreshValues();
+        m_monitorWindow->ResetValues();
         m_manager->RequestRefresh();
     });
     m_manager->AddMenuFunction("Reset All", [&] {
