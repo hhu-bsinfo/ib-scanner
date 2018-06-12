@@ -154,6 +154,12 @@ void WindowManager::DrawWindows() {
         window->DisableAttribute(A_BOLD);
     }
 
+    refresh();
+
+    for (Window *window : m_windows) {
+        wrefresh(window->m_window);
+    }
+
     uint32_t posX = 0;
 
     for (uint32_t i = 0; i < m_menuFunctions.size(); i++) {
@@ -175,10 +181,6 @@ void WindowManager::DrawWindows() {
     }
 
     refresh();
-
-    for (Window *window : m_windows) {
-        wrefresh(window->m_window);
-    }
 }
 
 }
