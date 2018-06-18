@@ -21,9 +21,11 @@
 
 namespace CursesLib {
 
-MenuItem::MenuItem(const char *name, std::function<void()> onClick) :
-        m_onClick(std::move(onClick)),
-        m_isExpanded(false) {
+MenuItem::MenuItem(const char *name, std::function<void()> onClick, void* data) :
+    m_data(data),
+    m_onClick(std::move(onClick)),
+    m_isExpanded(false)
+{
     m_name = name;
 }
 

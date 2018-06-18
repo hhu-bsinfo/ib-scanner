@@ -41,7 +41,7 @@ public:
      * @param name The name
      * @param onClick The callback-function, which is called, after the item has been selected.
      */
-    explicit MenuItem(const char *name, std::function<void()> onClick);
+    explicit MenuItem(const char *name, std::function<void()> onClick, void* data = nullptr);
 
     /**
      * Destructor.
@@ -70,6 +70,13 @@ public:
     }
 
     /**
+     * Get the data.
+     */
+    void* GetData() {
+        return m_data;
+    }
+
+    /**
      * Add a subitem.
      */
     void AddSubitem(MenuItem item) {
@@ -94,6 +101,8 @@ public:
     void PerformClick();
 
 private:
+
+    void* m_data;
 
     std::string m_name;
 
