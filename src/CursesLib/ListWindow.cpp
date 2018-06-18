@@ -52,6 +52,8 @@ void ListWindow::HandleKey(int c) {
             break;
     }
 
+    Window::HandleKey(c);
+
     WindowManager::GetInstance()->RequestRefresh();
 }
 

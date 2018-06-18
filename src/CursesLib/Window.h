@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <ncurses.h>
 #include <string>
+#include <unordered_map>
+#include <functional>
 
 namespace CursesLib {
 
@@ -91,7 +93,24 @@ public:
     void Resize(uint32_t width, uint32_t height);
 
     /**
+     * Add a handler function, that is called, when a specified key is pressed an the windows is focused.
+     *
+     * @param c The key
+     * @param keyHandler The handler function
+     */
+    void AddKeyHandler(int c, std::function<void()> keyHandler);
+
+    /**
+     * Remove a handler function for a specified key.
+     *
+     * @param c The key
+     */
+    void RemoveKeyHandler(int c);
+
+    /**
      * Process a key, which has been pressed by the user.
+     * Implementations of Window must call this parent function,
+     * or else the manually registered key handlers won't work!
      *
      * @param c The key
      */
@@ -146,6 +165,8 @@ protected:
 protected:
 
     WINDOW *m_window;
+
+    std::unordered_map<int, std::function<void()>> m_keyHandlerMap;
 
     uint32_t m_posX, m_posY;
     uint32_t m_width, m_height;

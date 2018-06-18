@@ -52,6 +52,8 @@ void OkMessageWindow::DrawContent() {
 }
 
 void OkMessageWindow::HandleKey(int c) {
+    Window::HandleKey(c);
+
     if (c == 10) {
         m_onClick();
         WindowManager::GetInstance()->DeregisterWindow(this);

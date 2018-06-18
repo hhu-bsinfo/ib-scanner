@@ -69,8 +69,18 @@ void Window::DrawContent() {
     }
 }
 
-void Window::HandleKey(int c) {
+void Window::AddKeyHandler(int c, std::function<void()> keyHandler) {
+    m_keyHandlerMap[c] = keyHandler;
+}
 
+void Window::RemoveKeyHandler(int c) {
+    m_keyHandlerMap.erase(c);
+}
+
+void Window::HandleKey(int c) {
+    if(m_keyHandlerMap.find(c) != m_keyHandlerMap.end()) {
+        m_keyHandlerMap[c]();
+    }
 }
 
 }

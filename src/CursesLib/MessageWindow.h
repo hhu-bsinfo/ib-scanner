@@ -61,6 +61,11 @@ public:
      */
     ~MessageWindow() override = default;
 
+    /**
+     * Overriding function from Window.
+     */
+    void HandleKey(int c) override;
+
 protected:
 
     /**

@@ -84,6 +84,8 @@ void YesNoMessageWindow::DrawContent() {
 }
 
 void YesNoMessageWindow::HandleKey(int c) {
+    Window::HandleKey(c);
+
     switch (c) {
         case KEY_LEFT:
             m_choice = true;

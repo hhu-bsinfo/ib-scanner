@@ -76,4 +76,8 @@ void MessageWindow::DrawContent() {
     }
 }
 
+void MessageWindow::HandleKey(int c) {
+    Window::HandleKey(c);
+}
+
 }
