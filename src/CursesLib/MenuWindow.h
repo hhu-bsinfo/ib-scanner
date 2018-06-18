@@ -64,6 +64,11 @@ public:
         m_items.emplace_back(item);
     }
 
+    /**
+     * Get the selected item.
+     */
+    MenuItem& GetSelectedItem();
+
 protected:
 
     /**

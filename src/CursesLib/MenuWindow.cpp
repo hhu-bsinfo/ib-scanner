@@ -184,4 +184,10 @@ MenuItem *MenuWindow::CalcSelectedItem(uint32_t &counter, std::vector<MenuItem> 
     return nullptr;
 }
 
+MenuItem &MenuWindow::GetSelectedItem()  {
+    uint32_t counter = 0;
+
+    return *CalcSelectedItem(counter, m_items, m_highlight + m_scrollOffset);
+}
+
 }
