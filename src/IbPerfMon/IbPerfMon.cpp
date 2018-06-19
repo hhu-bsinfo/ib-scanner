@@ -74,9 +74,18 @@ void IbPerfMon::Run() {
         m_monitorWindow[0]->RefreshValues();
         m_manager->RequestRefresh();
     });
-    m_manager->AddMenuFunction("Single Window", [&] { SetWindowCount(1); });
-    m_manager->AddMenuFunction("Dual Window", [&] { SetWindowCount(2); });
-    m_manager->AddMenuFunction("Quad Window", [&] { SetWindowCount(4); });
+    m_manager->AddMenuFunction("Single Window", [&] {
+        SetWindowCount(1);
+        m_manager->SetFocus(m_menuWindow);
+    });
+    m_manager->AddMenuFunction("Dual Window", [&] {
+        SetWindowCount(2);
+        m_manager->SetFocus(m_menuWindow);
+    });
+    m_manager->AddMenuFunction("Quad Window", [&] {
+        SetWindowCount(4);
+        m_manager->SetFocus(m_menuWindow);
+    });
     m_manager->AddMenuFunction("Exit", [&] { m_isRunning = false; });
 
     StartMonitoring();
@@ -161,6 +170,8 @@ void IbPerfMon::StartMonitoring() {
         CursesLib::MenuItem item(node->GetDescription().c_str(), [&, node]() {
             SetWindowCount(1);
 
+            m_manager->SetFocus(m_menuWindow);
+
             m_monitorWindow[0]->SetPerfCounter(node);
             m_monitorWindow[0]->SetTitle(node->GetDescription().c_str());
         }, node);
@@ -171,6 +182,8 @@ void IbPerfMon::StartMonitoring() {
             snprintf(portName, 10, "Port %d", unsigned(port->GetNum()));
             item.AddSubitem(CursesLib::MenuItem(portName, [&, port, portName]() {
                 SetWindowCount(1);
+
+                m_manager->SetFocus(m_menuWindow);
 
                 m_monitorWindow[0]->SetPerfCounter(port);
                 m_monitorWindow[0]->SetTitle(portName);
