@@ -88,6 +88,15 @@ public:
     void DeregisterWindow(Window *window);
 
     /**
+     * Set the focus to a specified window.
+     *
+     * The window has to be registered beforehand.
+     *
+     * @param window The window
+     */
+    void SetFocus(Window *window);
+
+    /**
      * Advises the UI-thread to refresh all windows as soon as possible.
      */
     void RequestRefresh();

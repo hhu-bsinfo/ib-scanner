@@ -115,6 +115,16 @@ void WindowManager::DeregisterWindow(Window *window) {
     }
 }
 
+void WindowManager::SetFocus(Window *window) {
+    if (std::find(m_windows.begin(), m_windows.end(), window) != m_windows.end()) {
+        m_windows.erase(std::remove(m_windows.begin(), m_windows.end(), window), m_windows.end());
+
+        m_windows.emplace_back(window);
+
+        RequestRefresh();
+    }
+}
+
 void WindowManager::RequestRefresh() {
     m_refresh = true;
 }
