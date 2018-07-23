@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <IbPerfLib/IbMadException.h>
 #include "MonitorWindow.h"
 
 namespace IbPerfMon {
@@ -22,8 +23,6 @@ MonitorWindow::MonitorWindow(uint32_t posX, uint32_t posY, uint32_t width, uint3
         m_rcvThroughput(0),
         m_refreshThroughput(false),
         m_refreshInterval(refreshInterval) {
-    m_perfCounter->RefreshCounters();
-
     m_refreshThread = std::thread(&MonitorWindow::RefreshThread, this);
 }
 
@@ -41,13 +40,21 @@ void MonitorWindow::SetPerfCounter(IbPerfLib::IbPerfCounter *counter) {
     m_xmitThroughput = 0;
     m_rcvThroughput = 0;
 
-    m_perfCounter->RefreshCounters();
     RefreshValues();
 }
 
 void MonitorWindow::RefreshValues() {
-    m_perfCounter->RefreshCounters();
     m_items.clear();
+
+    try {
+        m_perfCounter->RefreshCounters();
+    } catch(const IbPerfLib::IbMadException &exception) {
+        m_items.emplace_back("An error occurred while refreshing the performance counters:");
+        m_items.emplace_back(exception.what());
+        m_items.emplace_back("Retrying...");
+
+        return;
+    }
 
     if(m_refreshThroughput) {
         if (m_lastXmit != 0 && m_lastRcv != 0) {

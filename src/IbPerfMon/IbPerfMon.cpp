@@ -17,6 +17,7 @@
  */
 
 #include <ncurses.h>
+#include <IbPerfLib/IbMadException.h>
 #include "CursesLib/WindowManager.h"
 #include "CursesLib/OkMessageWindow.h"
 #include "Version.h"
@@ -103,11 +104,11 @@ void IbPerfMon::ScanFabric() {
 
     try {
         m_fabric = new IbPerfLib::IbFabric();
-    } catch (std::runtime_error &error) {
+    } catch (const IbPerfLib::IbMadException &exception) {
         m_manager->Stop();
 
         endwin();
-        printf("%s\nDo you have root-privileges?\n", error.what());
+        printf("%s\nDo you have root-privileges?\n", exception.what());
 
         exit(EXIT_FAILURE);
     }
