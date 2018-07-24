@@ -71,7 +71,7 @@ private:
 
     CursesLib::WindowManager *m_manager;
 
-    char m_helpMessage[256];
+    char m_helpMessage[512];
     CursesLib::OkMessageWindow *m_helpWindow;
     CursesLib::MenuWindow *m_menuWindow;
     MonitorWindow *m_monitorWindow[4];
