@@ -1,6 +1,8 @@
 #ifndef PROJECT_MONITORWINDOW_H
 #define PROJECT_MONITORWINDOW_H
 
+#include <thread>
+#include <mutex>
 #include <ncurses.h>
 #include <IbPerfLib/IbPerfCounter.h>
 #include <CursesLib/Window.h>
@@ -45,11 +47,6 @@ public:
     void SetPerfCounter(IbPerfLib::IbPerfCounter *counter);
 
     /**
-     * Refresh the counters.
-     */
-    void RefreshValues();
-
-    /**
      * Reset the counters.
      */
     void ResetValues();
@@ -59,6 +56,11 @@ private:
      * Overriding function from Window.
      */
     void DrawContent() override;
+
+    /**
+     * Refresh the counters.
+     */
+    void RefreshValues();
 
     /**
      * Refreshes the values in the given interval.
@@ -83,6 +85,7 @@ private:
     uint64_t m_xmitThroughput, m_rcvThroughput;
     bool m_refreshThroughput;
 
+    std::mutex m_refreshLock;
     std::thread m_refreshThread;
     uint32_t m_refreshInterval;
 

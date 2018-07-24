@@ -31,16 +31,24 @@ MonitorWindow::~MonitorWindow() {
 }
 
 void MonitorWindow::DrawContent() {
+    m_refreshLock.lock();
+
     ListWindow::DrawContent();
+
+    m_refreshLock.unlock();
 }
 
 void MonitorWindow::SetPerfCounter(IbPerfLib::IbPerfCounter *counter) {
+    m_refreshLock.lock();
+
     m_perfCounter = counter;
     m_highlight = 0;
     m_xmitThroughput = 0;
     m_rcvThroughput = 0;
 
     RefreshValues();
+
+    m_refreshLock.unlock();
 }
 
 void MonitorWindow::RefreshValues() {
@@ -136,19 +144,27 @@ void MonitorWindow::RefreshValues() {
 }
 
 void MonitorWindow::ResetValues() {
+    m_refreshLock.lock();
+
     m_perfCounter->ResetCounters();
 
     m_xmitThroughput = 0;
     m_rcvThroughput = 0;
 
     RefreshValues();
+
+    m_refreshLock.unlock();
 }
 
 void MonitorWindow::RefreshThread() {
     while (true) {
+        m_refreshLock.lock();
+        
         m_refreshThroughput = true;
         RefreshValues();
         CursesLib::WindowManager::GetInstance()->RequestRefresh();
+
+        m_refreshLock.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_refreshInterval));
     }
 }

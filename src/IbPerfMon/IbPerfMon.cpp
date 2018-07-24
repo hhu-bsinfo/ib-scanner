@@ -72,7 +72,6 @@ void IbPerfMon::Run() {
     });
     m_manager->AddMenuFunction("Reset All", [&] {
         m_fabric->ResetCounters();
-        m_monitorWindow[0]->RefreshValues();
         m_manager->RequestRefresh();
     });
     m_manager->AddMenuFunction("Single Window", [&] {
