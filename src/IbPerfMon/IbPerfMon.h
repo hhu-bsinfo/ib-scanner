@@ -39,8 +39,10 @@ class IbPerfMon {
 public:
     /**
      * Constructor.
+     *
+     * @param compatibility Set to true, to activate compatibility mode.
      */
-    IbPerfMon();
+    explicit IbPerfMon(bool compatibility = false);
 
     /**
      * Destructor.
@@ -63,6 +65,11 @@ private:
      */
     void StartMonitoring();
 
+    /**
+     * Set the amount of monitor windows to either 1, 2, or 4.
+     *
+     * @param windowCount The amount of monitor windows to show (1, 2, or 4)
+     */
     void SetWindowCount(uint8_t windowCount);
 
 private:
@@ -76,6 +83,7 @@ private:
     CursesLib::MenuWindow *m_menuWindow;
     MonitorWindow *m_monitorWindow[4];
 
+    bool m_compatibility;
     bool m_isRunning;
 };
 

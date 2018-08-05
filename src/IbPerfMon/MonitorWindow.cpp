@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <IbPerfLib/IbMadException.h>
+#include <IbPerfLib/Exception/IbMadException.h>
 #include "MonitorWindow.h"
 
 namespace IbPerfMon {
@@ -56,7 +56,7 @@ void MonitorWindow::RefreshValues() {
 
     try {
         m_perfCounter->RefreshCounters();
-    } catch(const IbPerfLib::IbMadException &exception) {
+    } catch(const IbPerfLib::IbPerfException &exception) {
         m_items.emplace_back("An error occurred while refreshing the performance counters:");
         m_items.emplace_back(exception.what());
         m_items.emplace_back("Retrying...");

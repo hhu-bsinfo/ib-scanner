@@ -17,7 +17,7 @@
  */
 
 #include <ncurses.h>
-#include <IbPerfLib/IbMadException.h>
+#include <IbPerfLib/Exception/IbMadException.h>
 #include "CursesLib/WindowManager.h"
 #include "CursesLib/OkMessageWindow.h"
 #include "Version.h"
@@ -26,11 +26,12 @@
 
 namespace IbPerfMon {
 
-IbPerfMon::IbPerfMon() :
+IbPerfMon::IbPerfMon(bool compatibility) :
         m_fabric(nullptr),
         m_manager(CursesLib::WindowManager::GetInstance()),
         m_helpWindow(nullptr),
         m_menuWindow(nullptr),
+        m_compatibility(compatibility),
         m_isRunning(true)
 {
     snprintf(m_helpMessage, 512, "IbPerfMon %s - git %s\n"
@@ -102,12 +103,11 @@ void IbPerfMon::ScanFabric() {
     m_manager->RegisterWindow(&scanMsg);
 
     try {
-        m_fabric = new IbPerfLib::IbFabric();
+        m_fabric = new IbPerfLib::IbFabric(m_compatibility);
     } catch (const IbPerfLib::IbMadException &exception) {
         m_manager->Stop();
 
-        endwin();
-        printf("%s\nDo you have root-privileges?\n", exception.what());
+        printf("%s\n", exception.what());
 
         exit(EXIT_FAILURE);
     }
@@ -248,8 +248,60 @@ void IbPerfMon::SetWindowCount(uint8_t windowCount) {
 
 }
 
+bool compat = false;
+
+void printUsage() {
+    printf("Usage: ./IbPerfMon [OPTION]...\n"
+           "Available options:\n"
+           "-m, --mode\n"
+           "    Set the operating mode to either 'mad' or 'compat' (Default: 'mad').\n"
+           "-h, --help\n"
+           "    Show this help message.\n");
+}
+
+void parseOpts(int argc, char *argv[]) {
+    while(argc > 0) {
+        if(!strcmp(argv[0], "-m") || !(strcmp(argv[0], "--mode"))) {
+            if(argc < 2) {
+                printUsage();
+
+                printf("\n'%s' requires a parameter!\n", argv[0]);
+
+                exit(EXIT_FAILURE);
+            }
+
+            if(!strcmp(argv[1], "mad")) {
+                compat = false;
+            } else if(!strcmp(argv[1], "compat")) {
+                compat = true;
+            } else {
+                printUsage();
+
+                printf("\nUnrecognized parameter '%s' for option '%s'!\n", argv[1], argv[0]);
+
+                exit(EXIT_FAILURE);
+            }
+        } else if(!strcmp(argv[0], "-h") || !(strcmp(argv[0], "--help"))) {
+            printUsage();
+
+            exit(EXIT_SUCCESS);
+        } else {
+            printUsage();
+
+            printf("\nUnknown option '%s'!\n", argv[0]);
+
+            exit(EXIT_FAILURE);
+        }
+
+        argc -= 2;
+        argv = &argv[2];
+    }
+}
+
 int main(int argc, char *argv[]) {
-    IbPerfMon::IbPerfMon perfMon;
+    parseOpts(argc - 1, &argv[1]);
+
+    IbPerfMon::IbPerfMon perfMon(compat);
 
     perfMon.Run();
 
