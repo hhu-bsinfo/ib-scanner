@@ -117,7 +117,17 @@ void IbPerfMon::ScanFabric() {
     bool wait = true;
 
     snprintf(doneMsgBuf, 100, "Finished scanning fabric! %d nodes found.", m_fabric->GetNumNodes());
-    CursesLib::OkMessageWindow doneMsg("IbPerfMon", doneMsgBuf, [&] { wait = false; });
+
+    CursesLib::OkMessageWindow doneMsg("IbPerfMon", doneMsgBuf, [&] {
+        wait = false;
+
+        if(m_fabric->GetNumNodes() == 0) {
+            m_manager->Stop();
+
+            exit(EXIT_SUCCESS);
+        }
+    });
+
     CursesLib::WindowManager::GetInstance()->RegisterWindow(&doneMsg);
 
     while (wait);
@@ -132,11 +142,11 @@ void IbPerfMon::StartMonitoring() {
     m_monitorWindow[0] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
             m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
     m_monitorWindow[1] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[1]->GetDescription().c_str(), m_fabric->GetNodes()[1]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
     m_monitorWindow[2] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[2]->GetDescription().c_str(), m_fabric->GetNodes()[2]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
     m_monitorWindow[3] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[3]->GetDescription().c_str(), m_fabric->GetNodes()[3]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
 
     m_menuWindow->AddKeyHandler('1', [&]() {
         auto& item = m_menuWindow->GetSelectedItem();
