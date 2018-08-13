@@ -33,6 +33,7 @@ IbPerfMon::IbPerfMon(bool compatibility) :
         m_manager(CursesLib::WindowManager::GetInstance()),
         m_helpWindow(nullptr),
         m_menuWindow(nullptr),
+        m_oldStderr(dup(2)),
         m_compatibility(compatibility),
         m_isRunning(true)
 {
@@ -57,9 +58,16 @@ IbPerfMon::~IbPerfMon() {
     delete m_monitorWindow[1];
     delete m_monitorWindow[2];
     delete m_monitorWindow[3];
+
+    fdopen(m_oldStderr, "w");
 }
 
 void IbPerfMon::Run() {
+    // Suppress all messages, that are printed to stderr.
+    // Unfortunately, this is needed, because libibmad prints warning to stderr.
+    // These warnings cannot be turned off and intercept with ncurses.
+    freopen("/dev/null", "w", stderr);
+
     m_manager->Initialize();
 
     m_helpWindow = new CursesLib::OkMessageWindow("Help", m_helpMessage, [] {});

@@ -83,6 +83,8 @@ private:
     CursesLib::MenuWindow *m_menuWindow;
     MonitorWindow *m_monitorWindow[4];
 
+    int m_oldStderr;
+
     bool m_compatibility;
     bool m_isRunning;
 };

@@ -3,11 +3,20 @@
 
 #include <thread>
 #include <mutex>
+#include <unistd.h>
 #include <ncurses.h>
 #include <IbPerfLib/IbPerfCounter.h>
 #include <CursesLib/Window.h>
 #include <CursesLib/WindowManager.h>
 #include <CursesLib/ListWindow.h>
+
+#define SUPPRESS_STDERR(CODE) {\
+    int oldStderr = dup(2);\
+    freopen("/dev/null", "w", stderr);\
+    CODE\
+    fclose(stderr);\
+    stderr = fdopen(oldStderr, "w");\
+}
 
 namespace IbPerfMon {
 
