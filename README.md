@@ -21,3 +21,9 @@ sudo apt install cmake libibmad-dev libibumad-dev libibnetdisc-dev libopensm-dev
 ./build.sh
 sudo ./build/bin/IbPerfMon
 ```
+
+It is also possible to start IbPerfMon in compatibility mode, where it does not need root privileges. However, it will only monitor local HCAs in this mode.
+
+```
+./build/bin/IbPerfMon --mode compat
+```
