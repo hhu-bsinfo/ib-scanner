@@ -18,6 +18,8 @@
 
 #include <ncurses.h>
 #include <IbPerfLib/Exception/IbMadException.h>
+#include <IbPerfLib/Exception/IbFileException.h>
+#include <CursesLib/YesNoMessageWindow.h>
 #include "CursesLib/WindowManager.h"
 #include "CursesLib/OkMessageWindow.h"
 #include "Version.h"
@@ -105,10 +107,32 @@ void IbPerfMon::ScanFabric() {
     try {
         m_fabric = new IbPerfLib::IbFabric(m_compatibility);
     } catch (const IbPerfLib::IbMadException &exception) {
+        bool wait = true;
+
+        CursesLib::YesNoMessageWindow errorWindow("Error", "An error occurred, while scanning the fabric.\n"
+                                                           "You probably don't have root privileges.\n"
+                                                           "Do you want to continue in compatibility mode?\n"
+                                                           "You will only be able to monitor local devices,\n"
+                                                           "but don't need root prvilieges.",
+                                                           [&](bool sel) {
+            if(sel){
+                m_compatibility = true;
+
+                delete m_fabric;
+                m_fabric = new IbPerfLib::IbFabric(m_compatibility);
+
+                wait = false;
+            } else {
+                m_manager->Stop();
+                exit(EXIT_FAILURE);
+            }
+        });
+
+        m_manager->RegisterWindow(&errorWindow);
+
+        while(wait);
+    } catch (const IbPerfLib::IbFileException &exception) {
         m_manager->Stop();
-
-        printf("%s\n", exception.what());
-
         exit(EXIT_FAILURE);
     }
 
@@ -130,7 +154,7 @@ void IbPerfMon::ScanFabric() {
 
     CursesLib::WindowManager::GetInstance()->RegisterWindow(&doneMsg);
 
-    while (wait);
+    while(wait);
 }
 
 void IbPerfMon::StartMonitoring() {
