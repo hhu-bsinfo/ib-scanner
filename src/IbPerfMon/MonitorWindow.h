@@ -6,17 +6,10 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include <IbPerfLib/IbPerfCounter.h>
+#include <IbPerfLib/IbDiagPerfCounter.h>
 #include <CursesLib/Window.h>
 #include <CursesLib/WindowManager.h>
 #include <CursesLib/ListWindow.h>
-
-#define SUPPRESS_STDERR(CODE) {\
-    int oldStderr = dup(2);\
-    freopen("/dev/null", "w", stderr);\
-    CODE\
-    fclose(stderr);\
-    stderr = fdopen(oldStderr, "w");\
-}
 
 namespace IbPerfMon {
 
@@ -43,7 +36,8 @@ public:
      * @param refreshInterval The interval, in which the counters shall be refreshed
      */
     MonitorWindow(uint32_t posX, uint32_t posY, uint32_t width, uint32_t height, const char *title,
-                  IbPerfLib::IbPerfCounter *perfCounter, uint32_t refreshInterval = 2000);
+                  IbPerfLib::IbPerfCounter *perfCounter, IbPerfLib::IbDiagPerfCounter *diagPerfCounter = nullptr,
+                  uint32_t refreshInterval = 2000);
 
     /**
      * Destructor.
@@ -51,9 +45,9 @@ public:
     ~MonitorWindow() override;
 
     /**
-     * Set the performance counter.
+     * Set the performance counters.
      */
-    void SetPerfCounter(IbPerfLib::IbPerfCounter *counter);
+    void SetPerfCounter(IbPerfLib::IbPerfCounter *perfCounter, IbPerfLib::IbDiagPerfCounter *diagPerfCounter = nullptr);
 
     /**
      * Reset the counters.
@@ -84,11 +78,12 @@ private:
      *
      * @return The formatted string
      */
-    static std::string FormatValue(uint64_t value, const char *unit = "Units");
+    std::string FormatValue(const std::string &name, uint64_t value, const std::string &unit = "Units");
 
 private:
 
     IbPerfLib::IbPerfCounter *m_perfCounter;
+    IbPerfLib::IbDiagPerfCounter *m_diagPerfCounter;
 
     uint64_t m_lastXmit, m_lastRcv;
     uint64_t m_xmitThroughput, m_rcvThroughput;

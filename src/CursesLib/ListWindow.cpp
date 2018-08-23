@@ -19,7 +19,7 @@ void ListWindow::DrawContent() {
         }
     }
 
-    for (uint32_t i = 0; i < m_items.size() && i < GetHeight(); i++) {
+    for (uint32_t i = 0; i + m_scrollOffset < m_items.size() && i < GetHeight(); i++) {
         if (i == m_highlight) {
             EnableAttribute(A_REVERSE);
             PrintStringAt(0, i, m_items[i + m_scrollOffset].c_str());

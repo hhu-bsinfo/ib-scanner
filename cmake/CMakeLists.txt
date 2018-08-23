@@ -62,6 +62,9 @@ endif ()
 # Set compiler-flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 
+# For development: Uncomment this line to compile with sanitizers to debug memory errors and leaks
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address")
+
 # Add IbPerfLib as external project
 ExternalProject_Add(IbPerfLib_git
         GIT_REPOSITORY https://github.com/hhu-bsinfo/ibperf-lib.git

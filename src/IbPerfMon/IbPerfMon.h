@@ -19,6 +19,7 @@
 #ifndef PROJECT_IBPERFMON_H
 #define PROJECT_IBPERFMON_H
 
+#include <IbPerfLib/IbDiagPerfCounter.h>
 #include <IbPerfLib/IbFabric.h>
 #include <CursesLib/OkMessageWindow.h>
 #include <CursesLib/MenuWindow.h>
@@ -73,6 +74,8 @@ private:
     void SetWindowCount(uint8_t windowCount);
 
 private:
+
+    std::unordered_map<uint64_t, IbPerfLib::IbDiagPerfCounter*> m_diagPerfCounterMap;
 
     IbPerfLib::IbFabric *m_fabric;
 

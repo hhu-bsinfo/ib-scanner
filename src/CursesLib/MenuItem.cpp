@@ -1,3 +1,5 @@
+#include <utility>
+
 /*
  * Copyright (C) 2018 Heinrich-Heine-Universitaet Duesseldorf,
  * Institute of Computer Science, Department Operating Systems
@@ -21,12 +23,12 @@
 
 namespace CursesLib {
 
-MenuItem::MenuItem(const char *name, std::function<void()> onClick, void* data) :
-    m_data(data),
-    m_onClick(std::move(onClick)),
-    m_isExpanded(false)
-{
-    m_name = name;
+MenuItem::MenuItem(std::string name, std::function<void()> onClick, void *data) :
+        m_name(std::move(name)),
+        m_onClick(std::move(onClick)),
+        m_data(data),
+        m_isExpanded(false) {
+
 }
 
 void MenuItem::ToggleExpanded() {

@@ -20,6 +20,8 @@
 #include <IbPerfLib/Exception/IbMadException.h>
 #include <IbPerfLib/Exception/IbFileException.h>
 #include <CursesLib/YesNoMessageWindow.h>
+#include <verbs.h>
+#include <mad.h>
 #include "CursesLib/WindowManager.h"
 #include "CursesLib/OkMessageWindow.h"
 #include "Version.h"
@@ -29,6 +31,7 @@
 namespace IbPerfMon {
 
 IbPerfMon::IbPerfMon(bool compatibility) :
+        m_diagPerfCounterMap(std::unordered_map<uint64_t, IbPerfLib::IbDiagPerfCounter*>()),
         m_fabric(nullptr),
         m_manager(CursesLib::WindowManager::GetInstance()),
         m_helpWindow(nullptr),
@@ -58,6 +61,10 @@ IbPerfMon::~IbPerfMon() {
     delete m_monitorWindow[1];
     delete m_monitorWindow[2];
     delete m_monitorWindow[3];
+
+    for(const auto &entry : m_diagPerfCounterMap) {
+        delete entry.second;
+    }
 
     fdopen(m_oldStderr, "w");
 }
@@ -112,6 +119,50 @@ void IbPerfMon::ScanFabric() {
     CursesLib::MessageWindow scanMsg("IbPerfMon", "Scanning fabric! Please wait...");
     m_manager->RegisterWindow(&scanMsg);
 
+    // Scan for local devices and create an instance of IbPerfLib::IbDiagPerfCounter for each found device
+    int numDevices;
+    ibv_device **deviceList = ibv_get_device_list(&numDevices);
+
+    if(deviceList == nullptr) {
+        printf("Unable to get device list! Error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    for(int32_t i = 0; i < numDevices; i++) {
+        const char *deviceName = ibv_get_device_name(deviceList[i]);
+        ibv_context *deviceContext = ibv_open_device(deviceList[i]);
+
+        if(deviceContext == nullptr) {
+            continue;
+        }
+
+        ibv_device_attr deviceAttributes{};
+        int ret = ibv_query_device(deviceContext, &deviceAttributes);
+
+        if(ret != 0) {
+            ibv_close_device(deviceContext);
+            continue;
+        }
+
+        m_diagPerfCounterMap[ntohll(deviceAttributes.node_guid)] = new IbPerfLib::IbDiagPerfCounter(deviceName, 0);
+
+        for(uint8_t j = 1; j < deviceAttributes.phys_port_cnt + 1; j++) {
+            ibv_port_attr portAttributes{};
+            ret = ibv_query_port(deviceContext, j, &portAttributes);
+
+            if(ret != 0) {
+                continue;
+            }
+
+            m_diagPerfCounterMap[portAttributes.lid] = new IbPerfLib::IbDiagPerfCounter(deviceName, j);
+        }
+
+        ibv_close_device(deviceContext);
+    }
+
+    ibv_free_device_list(deviceList);
+
+    //Scan the entire fabric for devices
     try {
         m_fabric = new IbPerfLib::IbFabric(m_compatibility);
     } catch (const IbPerfLib::IbMadException &exception) {
@@ -171,64 +222,104 @@ void IbPerfMon::StartMonitoring() {
 
     m_menuWindow = new CursesLib::MenuWindow(0, 0, 70, termHeight - 1, "Menu");
 
+    IbPerfLib::IbDiagPerfCounter *diagPerfCounter = nullptr;
+
+    if(m_diagPerfCounterMap.find(m_fabric->GetNodes()[0]->GetGuid()) != m_diagPerfCounterMap.end()) {
+        diagPerfCounter = m_diagPerfCounterMap[m_fabric->GetNodes()[0]->GetGuid()];
+    }
+
     m_monitorWindow[0] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0], diagPerfCounter);
     m_monitorWindow[1] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0], diagPerfCounter);
     m_monitorWindow[2] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0], diagPerfCounter);
     m_monitorWindow[3] = new MonitorWindow(70, 0, termWidth - 70, termHeight - 1,
-            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0]);
+            m_fabric->GetNodes()[0]->GetDescription().c_str(), m_fabric->GetNodes()[0], diagPerfCounter);
 
     m_menuWindow->AddKeyHandler('1', [&]() {
-        auto& item = m_menuWindow->GetSelectedItem();
+        CursesLib::MenuItem &item = m_menuWindow->GetSelectedItem();
 
-        m_monitorWindow[0]->SetPerfCounter(static_cast<IbPerfLib::IbPerfCounter*>(item.GetData()));
+        IbPerfLib::IbPerfCounter* perfCounter = reinterpret_cast<IbPerfLib::IbPerfCounter*>(item.GetData());
+        IbPerfLib::IbDiagPerfCounter* diagCounter = m_diagPerfCounterMap[reinterpret_cast<uint64_t>(perfCounter)];
+
+        m_monitorWindow[0]->SetPerfCounter(perfCounter, diagCounter);
         m_monitorWindow[0]->SetTitle(item.GetName());
     });
 
     m_menuWindow->AddKeyHandler('2', [&]() {
-        auto& item = m_menuWindow->GetSelectedItem();
+        CursesLib::MenuItem &item = m_menuWindow->GetSelectedItem();
 
-        m_monitorWindow[1]->SetPerfCounter(static_cast<IbPerfLib::IbPerfCounter*>(item.GetData()));
+        IbPerfLib::IbPerfCounter* perfCounter = reinterpret_cast<IbPerfLib::IbPerfCounter*>(item.GetData());
+        IbPerfLib::IbDiagPerfCounter* diagCounter = m_diagPerfCounterMap[reinterpret_cast<uint64_t>(perfCounter)];
+
+        m_monitorWindow[1]->SetPerfCounter(perfCounter, diagCounter);
         m_monitorWindow[1]->SetTitle(item.GetName());
     });
 
     m_menuWindow->AddKeyHandler('3', [&]() {
-        auto& item = m_menuWindow->GetSelectedItem();
+        CursesLib::MenuItem &item = m_menuWindow->GetSelectedItem();
 
-        m_monitorWindow[2]->SetPerfCounter(static_cast<IbPerfLib::IbPerfCounter*>(item.GetData()));
+        IbPerfLib::IbPerfCounter* perfCounter = reinterpret_cast<IbPerfLib::IbPerfCounter*>(item.GetData());
+        IbPerfLib::IbDiagPerfCounter* diagCounter = m_diagPerfCounterMap[reinterpret_cast<uint64_t>(perfCounter)];
+
+        m_monitorWindow[2]->SetPerfCounter(perfCounter, diagCounter);
         m_monitorWindow[2]->SetTitle(item.GetName());
     });
 
     m_menuWindow->AddKeyHandler('4', [&]() {
-        auto& item = m_menuWindow->GetSelectedItem();
+        CursesLib::MenuItem &item = m_menuWindow->GetSelectedItem();
 
-        m_monitorWindow[3]->SetPerfCounter(static_cast<IbPerfLib::IbPerfCounter*>(item.GetData()));
+        IbPerfLib::IbPerfCounter* perfCounter = reinterpret_cast<IbPerfLib::IbPerfCounter*>(item.GetData());
+        IbPerfLib::IbDiagPerfCounter* diagCounter = m_diagPerfCounterMap[reinterpret_cast<uint64_t>(perfCounter)];
+
+        m_monitorWindow[3]->SetPerfCounter(perfCounter, diagCounter);
         m_monitorWindow[3]->SetTitle(item.GetName());
     });
 
     for (IbPerfLib::IbNode *node : m_fabric->GetNodes()) {
-        CursesLib::MenuItem item(node->GetDescription().c_str(), [&, node]() {
+        IbPerfLib::IbDiagPerfCounter *nodeDiagPerfCounter = nullptr;
+
+        if(m_diagPerfCounterMap.find(node->GetGuid()) != m_diagPerfCounterMap.end()) {
+            nodeDiagPerfCounter = m_diagPerfCounterMap[node->GetGuid()];
+
+            m_diagPerfCounterMap.erase(node->GetGuid());
+            m_diagPerfCounterMap[reinterpret_cast<uint64_t>(node)] = nodeDiagPerfCounter;
+        }
+
+        CursesLib::MenuItem item(node->GetDescription().c_str(), [&, node, nodeDiagPerfCounter]() {
             SetWindowCount(1);
 
             m_manager->SetFocus(m_menuWindow);
 
-            m_monitorWindow[0]->SetPerfCounter(node);
+            m_monitorWindow[0]->SetPerfCounter(node, nodeDiagPerfCounter);
             m_monitorWindow[0]->SetTitle(node->GetDescription().c_str());
+
+            m_manager->RequestRefresh();
         }, node);
 
         for (IbPerfLib::IbPort *port : node->GetPorts()) {
             char portName[10];
-
             snprintf(portName, 10, "Port %d", unsigned(port->GetNum()));
-            item.AddSubitem(CursesLib::MenuItem(portName, [&, port, portName]() {
+
+            IbPerfLib::IbDiagPerfCounter *portDiagPerfCounter = nullptr;
+
+            if(m_diagPerfCounterMap.find(port->GetLid()) != m_diagPerfCounterMap.end()) {
+                portDiagPerfCounter = m_diagPerfCounterMap[port->GetLid()];
+
+                m_diagPerfCounterMap.erase(port->GetLid());
+                m_diagPerfCounterMap[reinterpret_cast<uint64_t>(port)] = portDiagPerfCounter;
+            }
+
+            item.AddSubitem(CursesLib::MenuItem(portName, [&, port, portName, portDiagPerfCounter]() {
                 SetWindowCount(1);
 
                 m_manager->SetFocus(m_menuWindow);
 
-                m_monitorWindow[0]->SetPerfCounter(port);
+                m_monitorWindow[0]->SetPerfCounter(port, portDiagPerfCounter);
                 m_monitorWindow[0]->SetTitle(portName);
+
+                m_manager->RequestRefresh();
             }, port));
         }
 

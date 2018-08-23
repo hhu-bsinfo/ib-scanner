@@ -39,9 +39,10 @@ public:
      * Constructor.
      *
      * @param name The name
-     * @param onClick The callback-function, which is called, after the item has been selected.
+     * @param onClick The callback-function, which is called, after the item has been selected
+     * @param data Arbitrary data, that can be associated with this menu item
      */
-    explicit MenuItem(const char *name, std::function<void()> onClick, void* data = nullptr);
+    explicit MenuItem(std::string name, std::function<void()> onClick, void *data = nullptr);
 
     /**
      * Destructor.
@@ -63,10 +64,10 @@ public:
     }
 
     /**
-     * Get the subitems.
+     * Set the data.
      */
-    std::vector<MenuItem> &GetChildren() {
-        return m_children;
+    void SetData(void *data) {
+        m_data = data;
     }
 
     /**
@@ -74,6 +75,13 @@ public:
      */
     void* GetData() {
         return m_data;
+    }
+
+    /**
+     * Get the subitems.
+     */
+    std::vector<MenuItem> &GetChildren() {
+        return m_children;
     }
 
     /**
@@ -100,15 +108,15 @@ public:
      */
     void PerformClick();
 
-private:
-
-    void* m_data;
+protected:
 
     std::string m_name;
 
     std::vector<MenuItem> m_children;
 
     std::function<void()> m_onClick;
+
+    void *m_data;
 
     bool m_isExpanded;
 };
