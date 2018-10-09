@@ -94,7 +94,7 @@ void MonitorWindow::RefreshValues() {
     }
 
     m_items.emplace_back(FormatValue("Xmit Throughput", m_xmitThroughput, "Bytes/s"));
-    m_items.emplace_back(FormatValue("Rcv Throughput", m_xmitThroughput, "Bytes/s"));
+    m_items.emplace_back(FormatValue("Rcv Throughput", m_rcvThroughput, "Bytes/s"));
 
     m_items.emplace_back(FormatValue("Xmit Data", m_perfCounter->GetXmitDataBytes(), "Bytes"));
     m_items.emplace_back(FormatValue("Rcv Data", m_perfCounter->GetRcvDataBytes(), "Bytes"));
