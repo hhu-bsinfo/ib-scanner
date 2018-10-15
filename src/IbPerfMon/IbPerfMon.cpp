@@ -84,12 +84,11 @@ void IbPerfMon::Run() {
     ScanFabric();
 
     m_manager->AddMenuFunction("Help", [&] { m_manager->RegisterWindow(m_helpWindow); });
-    m_manager->AddMenuFunction("Reset Current", [&] {
+    m_manager->AddMenuFunction("Reset Counters", [&] {
         m_monitorWindow[0]->ResetValues();
-        m_manager->RequestRefresh();
-    });
-    m_manager->AddMenuFunction("Reset All", [&] {
-        m_fabric->ResetCounters();
+        m_monitorWindow[1]->ResetValues();
+        m_monitorWindow[2]->ResetValues();
+        m_monitorWindow[3]->ResetValues();
         m_manager->RequestRefresh();
     });
     m_manager->AddMenuFunction("Single Window", [&] {
