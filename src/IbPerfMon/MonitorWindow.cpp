@@ -169,7 +169,10 @@ void MonitorWindow::ResetValues() {
     m_perfCounter->ResetCounters();
 
     m_xmitThroughput = 0;
+    m_lastXmit = 0;
+
     m_rcvThroughput = 0;
+    m_lastRcv = 0;
 
     RefreshValues();
 
