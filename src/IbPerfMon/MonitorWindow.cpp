@@ -78,12 +78,15 @@ void MonitorWindow::RefreshValues() {
     }
 
     if(m_refreshThroughput) {
-        if (m_lastXmit != 0 && m_lastRcv != 0) {
+        if(m_lastXmit != 0) {
             m_xmitThroughput = (m_perfCounter->GetXmitDataBytes() - m_lastXmit) / (m_refreshInterval / 1000);
-            m_rcvThroughput = (m_perfCounter->GetRcvDataBytes() - m_lastRcv) / (m_refreshInterval / 1000);
-
         } else {
             m_xmitThroughput = 0;
+        }
+
+        if(m_lastRcv != 0) {
+            m_rcvThroughput = (m_perfCounter->GetRcvDataBytes() - m_lastRcv) / (m_refreshInterval / 1000);
+        } else {
             m_rcvThroughput = 0;
         }
 
