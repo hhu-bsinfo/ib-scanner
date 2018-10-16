@@ -1,8 +1,8 @@
-# IbPerfMonitor
+# IbPerfMonitor: A monitoring tool for InfiniBand networks
 
-A monitoring tool for Infiniband networks.
+[![Build Status](https://travis-ci.org/hhu-bsinfo/ibperf-monitor.svg?branch=master)](https://travis-ci.org/hhu-bsinfo/ibperf-monitor)
 
-This project uses the libibmad- and libibnetdisc-libraries to automatically discover all Infiniband devices in a
+This project uses the libibmad- and libibnetdisc-libraries to automatically discover all InfiniBand devices in a
 network and read their performance counters.
 
 # Build instructions

@@ -1,0 +1,39 @@
+language: cpp
+compiler: gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-5
+      - g++-5
+      - libibverbs-dev
+      - libibmad-dev
+      - libibumad-dev
+      - libibnetdisc-dev
+      - libopensm-dev
+
+before_install:
+  - eval "CC=gcc-5 && CXX=g++-5"
+
+stages:
+  - name: build
+
+jobs:
+  include:
+    - stage: build
+      script: ./build.sh
+
+before_deploy: tar -cf ibperf-monitor-${TRAVIS_TAG}.tar -C build/ ar/libCursesLib.a bin/IbPerfMon bin/WindowTest
+
+deploy:
+  provider: releases
+  api_key: ${ACCESS_TOKEN}
+  file: ibperf-monitor-${TRAVIS_TAG}.tar
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: hhu-bsinfo/ibperf-monitor
+    branch: master
+    tags: true
