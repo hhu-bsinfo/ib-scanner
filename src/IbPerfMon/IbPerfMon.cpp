@@ -17,6 +17,7 @@
  */
 
 #include <ncurses.h>
+#include <IbPerfLib/BuildConfig.h>
 #include <IbPerfLib/Exception/IbMadException.h>
 #include <IbPerfLib/Exception/IbFileException.h>
 #include <CursesLib/YesNoMessageWindow.h>
@@ -45,12 +46,16 @@ IbPerfMon::IbPerfMon(bool compatibility) :
                                  "Copyright (C) 2018 Heinrich-Heine-Universitaet Duesseldorf,\n"
                                  "Institute of Computer Science, Department Operating Systems\n"
                                  "Licensed under GPL v3\n\n"
+                                 "Build against:\n"
+                                 "IbPerfLib %s - git %s\n"
+                                 "Build date: %s\n\n"
                                  "Up/Down: Navigate menu\n"
                                  "Right/Left: Open/Close menu entry\n"
                                  "Enter: Select for single view\n"
                                  "1/2/3/4: Assign to window\n"
                                  "Tab: Switch window", BuildConfig::VERSION, BuildConfig::GIT_REV,
-                                 BuildConfig::BUILD_DATE);
+                                 BuildConfig::BUILD_DATE, IbPerfLib::BuildConfig::VERSION,
+                                 IbPerfLib::BuildConfig::GIT_REV, IbPerfLib::BuildConfig::BUILD_DATE);
 }
 
 IbPerfMon::~IbPerfMon() {
