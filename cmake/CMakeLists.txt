@@ -33,15 +33,27 @@ if (IBPERFMON_GIT_REV STREQUAL "")
     set(IBPERFMON_GIT_REV "not available")
 endif ()
 
+# Set git branch
+execute_process(COMMAND git rev-parse --symbolic-full-name --abbrev-ref HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE IBPERFMON_GIT_BRANCH ERROR_QUIET)
+string(STRIP "${IBPERFMON_GIT_BRANCH}" IBPERFMON_GIT_BRANCH)
+if (IBPERFMON_GIT_BRANCH STREQUAL "")
+    set(IBPERFMON_GIT_BRANCH "not available")
+endif ()
+
 # Set build date
 string(TIMESTAMP IBPERFMON_BUILD_DATE "%Y-%m-%d %H:%M:%S")
 
 # Print build information
-message("IbPerfMon ${IBPERFMON_VERSION} - git ${IBPERFMON_GIT_REV}, build date: ${IBPERFMON_BUILD_DATE}")
+
+message("IbPerfMon ${IBPERFMON_VERSION} - git ${IBPERFMON_GIT_REV}(${IBPERFMON_GIT_BRANCH}), \
+build date: ${IBPERFMON_BUILD_DATE}")
 
 # Set preprocessor defines
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIBPERFMON_VERSION='${IBPERFMON_VERSION}'\
-    -DIBPERFMON_GIT_REV='${IBPERFMON_GIT_REV}' -DIBPERFMON_BUILD_DATE='${IBPERFMON_BUILD_DATE}'")
+    -DIBPERFMON_GIT_REV='${IBPERFMON_GIT_REV}' -DIBPERFMON_GIT_BRANCH='${IBPERFMON_GIT_BRANCH}' \
+    -DIBPERFMON_BUILD_DATE='${IBPERFMON_BUILD_DATE}'")
 
 # Set source directory variables
 set(IBPERFMON_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
@@ -68,7 +80,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 # Add IbPerfLib as external project
 ExternalProject_Add(IbPerfLib_git
         GIT_REPOSITORY https://github.com/hhu-bsinfo/ibperf-lib.git
-        GIT_TAG master
+        GIT_TAG ${IBPERFMON_GIT_BRANCH}
         PREFIX ${CMAKE_CURRENT_BINARY_DIR}/IbPerfLib
         INSTALL_COMMAND "")
 
