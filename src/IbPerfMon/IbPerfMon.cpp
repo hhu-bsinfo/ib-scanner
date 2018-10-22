@@ -41,21 +41,22 @@ IbPerfMon::IbPerfMon(bool compatibility) :
         m_compatibility(compatibility),
         m_isRunning(true)
 {
-    snprintf(m_helpMessage, 512, "IbPerfMon %s - git %s\n"
+    snprintf(m_helpMessage, 512, "IbPerfMon %s - git %s(%s)\n"
                                  "Build date: %s\n"
                                  "Copyright (C) 2018 Heinrich-Heine-Universitaet Duesseldorf,\n"
                                  "Institute of Computer Science, Department Operating Systems\n"
                                  "Licensed under GPL v3\n\n"
                                  "Build against:\n"
-                                 "IbPerfLib %s - git %s\n"
+                                 "IbPerfLib %s - git %s(%s)\n"
                                  "Build date: %s\n\n"
                                  "Up/Down: Navigate menu\n"
                                  "Right/Left: Open/Close menu entry\n"
                                  "Enter: Select for single view\n"
                                  "1/2/3/4: Assign to window\n"
                                  "Tab: Switch window", BuildConfig::VERSION, BuildConfig::GIT_REV,
-                                 BuildConfig::BUILD_DATE, IbPerfLib::BuildConfig::VERSION,
-                                 IbPerfLib::BuildConfig::GIT_REV, IbPerfLib::BuildConfig::BUILD_DATE);
+                                 BuildConfig::GIT_BRANCH, BuildConfig::BUILD_DATE, IbPerfLib::BuildConfig::VERSION,
+                                 IbPerfLib::BuildConfig::GIT_REV, IbPerfLib::BuildConfig::GIT_BRANCH,
+                                 IbPerfLib::BuildConfig::BUILD_DATE);
 }
 
 IbPerfMon::~IbPerfMon() {

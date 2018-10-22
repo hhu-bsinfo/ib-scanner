@@ -23,6 +23,12 @@ const char *BuildConfig::BUILD_DATE = XSTRINGIFY(IBPERFMON_BUILD_DATE);
 const char *BuildConfig::BUILD_DATE = "0000-00-00 00:00:00";
 #endif
 
+#ifdef IBPERFMON_GIT_BRANCH
+const char *BuildConfig::GIT_BRANCH = XSTRINGIFY(IBPERFMON_GIT_BRANCH);
+#else
+const char *BuildConfig::GIT_BRANCH = "unknown";
+#endif
+
 }
 
 #undef STRINGIFY
