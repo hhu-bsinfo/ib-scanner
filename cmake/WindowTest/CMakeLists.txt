@@ -17,10 +17,10 @@
 project(WindowTest)
 message(STATUS "Project " ${PROJECT_NAME})
 
-include_directories(${IBPERFMONITOR_SRC_DIR})
+include_directories(${IBPERFMON_SRC_DIR})
  
 set(SOURCE_FILES
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/test/WindowTest.cpp)
+        ${IBPERFMON_SRC_DIR}/CursesLib/test/WindowTest.cpp)
  
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

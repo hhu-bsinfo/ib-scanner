@@ -17,17 +17,17 @@
 project(CursesLib)
 message(STATUS "Project " ${PROJECT_NAME})
 
-include_directories(${IBPERFMONITOR_SRC_DIR})
+include_directories(${IBPERFMON_SRC_DIR})
  
 set(SOURCE_FILES
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/WindowManager.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/Window.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/MessageWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/OkMessageWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/YesNoMessageWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/ListWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/MenuWindow.cpp
-        ${IBPERFMONITOR_SRC_DIR}/CursesLib/MenuItem.cpp)
+        ${IBPERFMON_SRC_DIR}/CursesLib/WindowManager.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/Window.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/MessageWindow.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/OkMessageWindow.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/YesNoMessageWindow.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/ListWindow.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/MenuWindow.cpp
+        ${IBPERFMON_SRC_DIR}/CursesLib/MenuItem.cpp)
  
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

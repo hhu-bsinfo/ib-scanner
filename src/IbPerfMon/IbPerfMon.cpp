@@ -24,7 +24,7 @@
 #include <mad.h>
 #include "CursesLib/WindowManager.h"
 #include "CursesLib/OkMessageWindow.h"
-#include "Version.h"
+#include "BuildConfig.h"
 #include "MonitorWindow.h"
 #include "IbPerfMon.h"
 
@@ -49,7 +49,8 @@ IbPerfMon::IbPerfMon(bool compatibility) :
                                  "Right/Left: Open/Close menu entry\n"
                                  "Enter: Select for single view\n"
                                  "1/2/3/4: Assign to window\n"
-                                 "Tab: Switch window", VERSION, GIT_REV, BUILD_DATE);
+                                 "Tab: Switch window", BuildConfig::VERSION, BuildConfig::GIT_REV,
+                                 BuildConfig::BUILD_DATE);
 }
 
 IbPerfMon::~IbPerfMon() {

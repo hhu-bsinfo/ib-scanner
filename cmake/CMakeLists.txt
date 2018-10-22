@@ -19,33 +19,33 @@ include(ExternalProject)
 
 # Set version
 execute_process(COMMAND git describe --tags --abbrev=0 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE IBPERFMONITOR_VERSION ERROR_QUIET)
-string(STRIP "${IBPERFMONITOR_VERSION}" IBPERFMONITOR_VERSION)
-if (IBPERFMONITOR_VERSION STREQUAL "")
-    set(IBPERFMONITOR_VERSION "v0.0.0")
+        OUTPUT_VARIABLE IBPERFMON_VERSION ERROR_QUIET)
+string(STRIP "${IBPERFMON_VERSION}" IBPERFMON_VERSION)
+if (IBPERFMON_VERSION STREQUAL "")
+    set(IBPERFMON_VERSION "v0.0.0")
 endif ()
 
 # Set git revision
 execute_process(COMMAND git log -1 --format=%h --date=short HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE IBPERFMONITOR_GIT_REV ERROR_QUIET)
-string(STRIP "${IBPERFMONITOR_GIT_REV}" IBPERFMONITOR_GIT_REV)
-if (IBPERFMONITOR_GIT_REV STREQUAL "")
-    set(IBPERFMONITOR_GIT_REV "not available")
+        OUTPUT_VARIABLE IBPERFMON_GIT_REV ERROR_QUIET)
+string(STRIP "${IBPERFMON_GIT_REV}" IBPERFMON_GIT_REV)
+if (IBPERFMON_GIT_REV STREQUAL "")
+    set(IBPERFMON_GIT_REV "not available")
 endif ()
 
 # Set build date
-string(TIMESTAMP IBPERFMONITOR_BUILD_DATE "%Y-%m-%d %H:%M:%S")
+string(TIMESTAMP IBPERFMON_BUILD_DATE "%Y-%m-%d %H:%M:%S")
 
 # Print build information
-message("IbPerfMon ${IBPERFMONITOR_VERSION} - git ${IBPERFMONITOR_GIT_REV}, build date: ${IBPERFMONITOR_BUILD_DATE}")
+message("IbPerfMon ${IBPERFMON_VERSION} - git ${IBPERFMON_GIT_REV}, build date: ${IBPERFMON_BUILD_DATE}")
 
 # Set preprocessor defines
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIBPERFMONITOR_VERSION='${IBPERFMONITOR_VERSION}'\
-    -DIBPERFMONITOR_GIT_REV='${IBPERFMONITOR_GIT_REV}' -DIBPERFMONITOR_BUILD_DATE='${IBPERFMONITOR_BUILD_DATE}'")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIBPERFMON_VERSION='${IBPERFMON_VERSION}'\
+    -DIBPERFMON_GIT_REV='${IBPERFMON_GIT_REV}' -DIBPERFMON_BUILD_DATE='${IBPERFMON_BUILD_DATE}'")
 
 # Set source directory variables
-set(IBPERFMONITOR_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-set(IBPERFMONITOR_SRC_DIR "${IBPERFMONITOR_ROOT_DIR}/src")
+set(IBPERFMON_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
+set(IBPERFMON_SRC_DIR "${IBPERFMON_ROOT_DIR}/src")
 
 # Set output directory variables
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ar)
@@ -68,13 +68,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 # Add IbPerfLib as external project
 ExternalProject_Add(IbPerfLib_git
         GIT_REPOSITORY https://github.com/hhu-bsinfo/ibperf-lib.git
+        GIT_TAG master
         PREFIX ${CMAKE_CURRENT_BINARY_DIR}/IbPerfLib
         INSTALL_COMMAND "")
 
 ExternalProject_Get_Property(IbPerfLib_git binary_dir)
 ExternalProject_Get_Property(IbPerfLib_git source_dir)
 
-add_library(IbPerfLib STATIC IMPORTED)
+add_library(IbPerfLib STATIC IMPORTED ../src/IbPerfMon/BuildConfig.cpp ../src/IbPerfMon/BuildConfig.h)
 set_property(TARGET IbPerfLib PROPERTY IMPORTED_LOCATION ${binary_dir}/ar/libIbPerfLib.a)
 
 add_dependencies(IbPerfLib IbPerfLib_git)
