@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef PROJECT_MENUITEM_H
-#define PROJECT_MENUITEM_H
+#ifndef IBPERFMON_MENUITEM_H
+#define IBPERFMON_MENUITEM_H
 
 #include <string>
 #include <vector>

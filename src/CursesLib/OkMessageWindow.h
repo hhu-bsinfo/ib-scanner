@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef PROJECT_OKMSGBOX_H
-#define PROJECT_OKMSGBOX_H
+#ifndef IBPERFMON_OKMSGBOX_H
+#define IBPERFMON_OKMSGBOX_H
 
 #include <functional>
 #include "MessageWindow.h"

@@ -1,5 +1,5 @@
-#ifndef PROJECT_WINDOWMANAGER_H
-#define PROJECT_WINDOWMANAGER_H
+#ifndef IBPERFMON_WINDOWMANAGER_H
+#define IBPERFMON_WINDOWMANAGER_H
 
 #include <vector>
 #include <thread>

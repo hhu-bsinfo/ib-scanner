@@ -1,5 +1,5 @@
-#ifndef PROJECT_MONITORWINDOW_H
-#define PROJECT_MONITORWINDOW_H
+#ifndef IBPERFMON_MONITORWINDOW_H
+#define IBPERFMON_MONITORWINDOW_H
 
 #include <thread>
 #include <mutex>

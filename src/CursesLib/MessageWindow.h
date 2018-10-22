@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef PROJECT_MSGBOX_H
-#define PROJECT_MSGBOX_H
+#ifndef IBPERFMON_MSGBOX_H
+#define IBPERFMON_MSGBOX_H
 
 #include <string>
 #include <ncurses.h>

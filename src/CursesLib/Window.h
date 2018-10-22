@@ -1,5 +1,5 @@
-#ifndef PROJECT_WINDOW_H
-#define PROJECT_WINDOW_H
+#ifndef IBPERFMON_WINDOW_H
+#define IBPERFMON_WINDOW_H
 
 #include <cstdint>
 #include <ncurses.h>

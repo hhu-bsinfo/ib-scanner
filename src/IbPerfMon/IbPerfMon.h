@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef PROJECT_IBPERFMON_H
-#define PROJECT_IBPERFMON_H
+#ifndef IBPERFMON_IBPERFMON_H
+#define IBPERFMON_IBPERFMON_H
 
 #include <IbPerfLib/IbDiagPerfCounter.h>
 #include <IbPerfLib/IbFabric.h>

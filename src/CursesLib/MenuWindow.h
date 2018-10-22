@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef PROJECT_MENULIST_H
-#define PROJECT_MENULIST_H
+#ifndef IBPERFMON_MENULIST_H
+#define IBPERFMON_MENULIST_H
 
 #include <vector>
 #include <ncurses.h>
