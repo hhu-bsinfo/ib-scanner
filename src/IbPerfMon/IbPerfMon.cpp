@@ -31,13 +31,14 @@
 
 namespace IbPerfMon {
 
-IbPerfMon::IbPerfMon(bool compatibility) :
+IbPerfMon::IbPerfMon(bool network, bool compatibility) :
         m_diagPerfCounterMap(std::unordered_map<uint64_t, IbPerfLib::IbDiagPerfCounter*>()),
         m_fabric(nullptr),
         m_manager(CursesLib::WindowManager::GetInstance()),
         m_helpWindow(nullptr),
         m_menuWindow(nullptr),
         m_oldStderr(dup(2)),
+        m_network(network),
         m_compatibility(compatibility),
         m_isRunning(true)
 {
@@ -170,7 +171,7 @@ void IbPerfMon::ScanFabric() {
 
     //Scan the entire fabric for devices
     try {
-        m_fabric = new IbPerfLib::IbFabric(m_compatibility);
+        m_fabric = new IbPerfLib::IbFabric(m_network, m_compatibility);
     } catch (const IbPerfLib::IbMadException &exception) {
         bool wait = true;
 
@@ -184,7 +185,7 @@ void IbPerfMon::ScanFabric() {
                 m_compatibility = true;
 
                 delete m_fabric;
-                m_fabric = new IbPerfLib::IbFabric(m_compatibility);
+                m_fabric = new IbPerfLib::IbFabric(false, m_compatibility);
 
                 wait = false;
             } else {
@@ -387,11 +388,14 @@ void IbPerfMon::SetWindowCount(uint8_t windowCount) {
 
 }
 
+bool network = true;
 bool compat = false;
 
 void printUsage() {
     printf("Usage: ./IbPerfMon [OPTION]...\n"
            "Available options:\n"
+           "-s, --scan\n"
+           "    Set where to scan for devices, possible values are 'network' and 'local' (Default: 'network').\n"
            "-m, --mode\n"
            "    Set the operating mode to either 'mad' or 'compat' (Default: 'mad').\n"
            "-h, --help\n"
@@ -401,6 +405,26 @@ void printUsage() {
 void parseOpts(int argc, char *argv[]) {
     while(argc > 0) {
         if(!strcmp(argv[0], "-m") || !(strcmp(argv[0], "--mode"))) {
+            if(argc < 2) {
+                printUsage();
+
+                printf("\n'%s' requires a parameter!\n", argv[0]);
+
+                exit(EXIT_FAILURE);
+            }
+
+            if(!strcmp(argv[1], "network")) {
+                network = true;
+            } else if(!strcmp(argv[1], "local")) {
+                network = false;
+            } else {
+                printUsage();
+
+                printf("\nUnrecognized parameter '%s' for option '%s'!\n", argv[1], argv[0]);
+
+                exit(EXIT_FAILURE);
+            }
+        } else if(!strcmp(argv[0], "-m") || !(strcmp(argv[0], "--mode"))) {
             if(argc < 2) {
                 printUsage();
 
@@ -440,7 +464,7 @@ void parseOpts(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
     parseOpts(argc - 1, &argv[1]);
 
-    IbPerfMon::IbPerfMon perfMon(compat);
+    IbPerfMon::IbPerfMon perfMon(network, compat);
 
     perfMon.Run();
 

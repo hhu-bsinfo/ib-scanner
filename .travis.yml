@@ -1,21 +1,15 @@
 language: cpp
 compiler: gcc
+dist: xenial
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - gcc-5
-      - g++-5
       - libibverbs-dev
       - libibmad-dev
       - libibumad-dev
       - libibnetdisc-dev
       - libopensm-dev
-
-before_install:
-  - eval "CC=gcc-5 && CXX=g++-5"
 
 stages:
   - name: build
