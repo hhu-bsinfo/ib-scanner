@@ -43,7 +43,7 @@ public:
      *
      * @param compatibility Set to true, to activate compatibility mode.
      */
-    explicit IbPerfMon(bool compatibility = false);
+    explicit IbPerfMon(bool network, bool compatibility);
 
     /**
      * Destructor.
@@ -88,7 +88,9 @@ private:
 
     int m_oldStderr;
 
+    bool m_network;
     bool m_compatibility;
+
     bool m_isRunning;
 };
 
