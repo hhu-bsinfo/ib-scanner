@@ -19,15 +19,15 @@ jobs:
     - stage: build
       script: ./build.sh
 
-before_deploy: tar -cf ibperf-monitor-${TRAVIS_TAG}.tar -C build/ ar/libCursesLib.a bin/IbPerfMon bin/WindowTest
+before_deploy: tar -cf ib-scanner-${TRAVIS_TAG}.tar -C build/ ar/libcurses.a bin/scanner bin/window-test
 
 deploy:
   provider: releases
   api_key: ${ACCESS_TOKEN}
-  file: ibperf-monitor-${TRAVIS_TAG}.tar
+  file: ib-scanner-${TRAVIS_TAG}.tar
   skip_cleanup: true
   overwrite: true
   on:
-    repo: hhu-bsinfo/ibperf-monitor
+    repo: hhu-bsinfo/ib-scanner
     branch: master
     tags: true

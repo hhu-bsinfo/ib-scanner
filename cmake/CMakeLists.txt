@@ -19,45 +19,45 @@ include(ExternalProject)
 
 # Set version
 execute_process(COMMAND git describe --tags --abbrev=0 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE IBPERFMON_VERSION ERROR_QUIET)
-string(STRIP "${IBPERFMON_VERSION}" IBPERFMON_VERSION)
-if (IBPERFMON_VERSION STREQUAL "")
-    set(IBPERFMON_VERSION "v0.0.0")
+        OUTPUT_VARIABLE IBSCANNER_VERSION ERROR_QUIET)
+string(STRIP "${IBSCANNER_VERSION}" IBSCANNER_VERSION)
+if (IBSCANNER_VERSION STREQUAL "")
+    set(IBSCANNER_VERSION "v0.0.0")
 endif ()
 
 # Set git revision
 execute_process(COMMAND git log -1 --format=%h --date=short HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE IBPERFMON_GIT_REV ERROR_QUIET)
-string(STRIP "${IBPERFMON_GIT_REV}" IBPERFMON_GIT_REV)
-if (IBPERFMON_GIT_REV STREQUAL "")
-    set(IBPERFMON_GIT_REV "not available")
+        OUTPUT_VARIABLE IBSCANNER_GIT_REV ERROR_QUIET)
+string(STRIP "${IBSCANNER_GIT_REV}" IBSCANNER_GIT_REV)
+if (IBSCANNER_GIT_REV STREQUAL "")
+    set(IBSCANNER_GIT_REV "not available")
 endif ()
 
 # Set git branch
 execute_process(COMMAND git rev-parse --symbolic-full-name --abbrev-ref HEAD
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE IBPERFMON_GIT_BRANCH ERROR_QUIET)
-string(STRIP "${IBPERFMON_GIT_BRANCH}" IBPERFMON_GIT_BRANCH)
-if (IBPERFMON_GIT_BRANCH STREQUAL "")
-    set(IBPERFMON_GIT_BRANCH "not available")
+        OUTPUT_VARIABLE IBSCANNER_GIT_BRANCH ERROR_QUIET)
+string(STRIP "${IBSCANNER_GIT_BRANCH}" IBSCANNER_GIT_BRANCH)
+if (IBSCANNER_GIT_BRANCH STREQUAL "")
+    set(IBSCANNER_GIT_BRANCH "not available")
 endif ()
 
 # Set build date
-string(TIMESTAMP IBPERFMON_BUILD_DATE "%Y-%m-%d %H:%M:%S")
+string(TIMESTAMP IBSCANNER_BUILD_DATE "%Y-%m-%d %H:%M:%S")
 
 # Print build information
 
-message("IbPerfMon ${IBPERFMON_VERSION} - git ${IBPERFMON_GIT_REV}(${IBPERFMON_GIT_BRANCH}), \
-build date: ${IBPERFMON_BUILD_DATE}")
+message("ib-scanner ${IBSCANNER_VERSION} - git ${IBSCANNER_GIT_REV}(${IBSCANNER_GIT_BRANCH}), \
+build date: ${IBSCANNER_BUILD_DATE}")
 
 # Set preprocessor defines
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIBPERFMON_VERSION='${IBPERFMON_VERSION}'\
-    -DIBPERFMON_GIT_REV='${IBPERFMON_GIT_REV}' -DIBPERFMON_GIT_BRANCH='${IBPERFMON_GIT_BRANCH}' \
-    -DIBPERFMON_BUILD_DATE='${IBPERFMON_BUILD_DATE}'")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIBSCANNER_VERSION='${IBSCANNER_VERSION}'\
+    -DIBSCANNER_GIT_REV='${IBSCANNER_GIT_REV}' -DIBSCANNER_GIT_BRANCH='${IBSCANNER_GIT_BRANCH}' \
+    -DIBSCANNER_BUILD_DATE='${IBSCANNER_BUILD_DATE}'")
 
 # Set source directory variables
-set(IBPERFMON_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-set(IBPERFMON_SRC_DIR "${IBPERFMON_ROOT_DIR}/src")
+set(IBSCANNER_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
+set(IBSCANNER_SRC_DIR "${IBSCANNER_ROOT_DIR}/src")
 
 # Set output directory variables
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ar)
@@ -77,24 +77,25 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 # For development: Uncomment this line to compile with sanitizers to debug memory errors and leaks
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address")
 
-# Add IbPerfLib as external project
-ExternalProject_Add(IbPerfLib_git
-        GIT_REPOSITORY https://github.com/hhu-bsinfo/ibperf-lib.git
-        GIT_TAG ${IBPERFMON_GIT_BRANCH}
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/IbPerfLib
+# Add Detector as external project
+include(ExternalProject)
+
+ExternalProject_Add(detector_git
+        GIT_REPOSITORY https://github.com/hhu-bsinfo/detector.git
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/detector
         INSTALL_COMMAND "")
 
-ExternalProject_Get_Property(IbPerfLib_git binary_dir)
-ExternalProject_Get_Property(IbPerfLib_git source_dir)
+ExternalProject_Get_Property(detector_git binary_dir)
+ExternalProject_Get_Property(detector_git source_dir)
 
-add_library(IbPerfLib STATIC IMPORTED ../src/IbPerfMon/BuildConfig.cpp ../src/IbPerfMon/BuildConfig.h)
-set_property(TARGET IbPerfLib PROPERTY IMPORTED_LOCATION ${binary_dir}/ar/libIbPerfLib.a)
+add_library(detector STATIC IMPORTED)
+set_property(TARGET detector PROPERTY IMPORTED_LOCATION ${binary_dir}/ar/libdetector.a)
 
-add_dependencies(IbPerfLib IbPerfLib_git)
+add_dependencies(detector detector_git)
 
 include_directories(${source_dir}/src)
 
 # Add subdirectories
-add_subdirectory(CursesLib)
-add_subdirectory(WindowTest)
-add_subdirectory(IbPerfMon)
+add_subdirectory(curses)
+add_subdirectory(window-test)
+add_subdirectory(scanner)
