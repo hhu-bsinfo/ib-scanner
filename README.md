@@ -1,7 +1,7 @@
 # ib-scanner: A terminal based monitoring tool for InfiniBand
 
 <p align="center">
-<img src="logo.png" height=250>
+<img src="logo.svg" height=175>
 </p>
 
 <p align="center">
